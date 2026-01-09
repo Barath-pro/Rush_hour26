@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 5 – Tower & Flip Final</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #2b1d16;
+  color: #f2e1c1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 14px;
+  overflow-y: auto;
+  padding-bottom: 80px;
+}
+
+/* Header */
+.header {
+  width: 100%;
+  background: #1c120e;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  border-bottom: 2px solid rgba(198,156,109,0.3);
+  box-sizing: border-box;
+}
+
+.header .left-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e6c9a8;
+  white-space: nowrap;
+}
+
+/* Scrollable middle */
+.page-wrapper {
+  width: 96%;
+  max-width: 650px;
+  margin: auto;
+  flex: 1;
+  padding-top: 110px;
+  min-height: calc(100vh - 160px);
+}
+
+.desc-box {
+  width: 100%;
+  max-width: 650px;
+  background: rgba(255,248,240,0.06);
+  border: 1px solid rgba(217,179,140,0.3);
+  padding: 18px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: justify;
+  box-sizing: border-box;
+  margin: auto;
+}
+
+/* Buttons */
+.scan-btn {
+  padding: 12px 22px;
+  font-size: 16px;
+  background: #8b5e3c;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  max-width: 220px;
+  display: block;
+  margin: auto;
+  margin-top: 18px;
+}
+
+/* Scanner */
+#reader {
+  width: 100%;
+  max-width: 340px;
+  margin: auto;
+  border-radius: 12px;
+  border: 2px dashed rgba(217,179,140,0.4);
+  background: rgba(0,0,0,0.18);
+  padding: 8px;
+  display: none;
+  min-height: 260px;
+  text-align: center;
+}
+
+/* Clue box */
+#clue-box {
+  display: none;
+  text-align: center;
+  margin-top: 22px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff8d2;
+  padding: 16px;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(217,179,140,0.3);
+  border-radius: 12px;
+}
+
+/* Success image */
+#success-img {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 10px;
+  margin: auto;
+  display: none;
+  margin-top: 20px;
+  border: 2px solid #d9b38c;
+  padding: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="left-text">Rush Hour</div>
+</div>
+
+<div class="page-wrapper">
+  <div class="level-title">Level 5 – Tower & Flip Final</div>
+
+  <!-- BOLD DESCRIPTION BOX WITH LEVEL 5 TEXT INSIDE -->
+  <div class="desc-box">
+    <b>
+      Member 1 holds a small square paper using straw suction and walks to partner.  
+      Partner collects the paper with hands.  
+      Do this 5 successful times → level complete → next riddle.
+    </b>
+  </div><br>
+
+  <center><button class="scan-btn" onclick="startCameraScan()">Scan QR (Camera)</button></center>
+  <center><button class="scan-btn" onclick="document.getElementById('qr-input-file').click()">Upload QR & Scan</button></center><br>
+
+  <input type="file" id="qr-input-file" accept="image/*" style="display:none;">
+
+  <div id="reader"></div>
+
+  <!-- SUCCESS IMAGE (HIDDEN UNTIL MATCHED) -->
+  <img id="success-img" src="static/clgbackside.jpeg" alt="Unlocked Image">
+
+  <div id="clue-box">
+    💎 <span id="clue-text">Final clue unlocked! Treasure claimed, Kutta! 🏆</span>
+  </div>
+</div>
+
+<!-- FOOTER SAME COLOR AS HEADER, FULL WIDTH, FIXED -->
+<footer>
+  © 2026 Treasure Hunt | Level 5 Final Stage
+</footer>
+
+<script>
+let qrScanner = new Html5Qrcode("reader");
+const EXPECTED_QR = "SIET-RUSH-HUNT-2026"; // your expected QR text
+
+function startCameraScan() {
+  document.getElementById("reader").style.display = "block";
+  document.getElementById("success-img").style.display = "none";
+  document.getElementById("clue-box").style.display = "none";
+
+  qrScanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    (decodedText) => {
+      qrScanner.stop().then(() => handleResult(decodedText));
+    }
+  ).catch(() => alert("Camera permission denied ❌"));
+}
+
+function handleResult(decodedText) {
+  if (decodedText === EXPECTED_QR) {
+    document.getElementById("clue-text").innerText = "QR Matched ✔ Final clue unlocked!";
+    document.getElementById("clue-box").style.display = "block";
+    document.getElementById("success-img").style.display = "block";
+  } else {
+    alert("Wrong QR ❌ Try again");
+  }
+}
+
+// Upload file scan + match check
+document.getElementById("qr-input-file").addEventListener("change", async function() {
+  const file = this.files[0];
+  if (!file) return;
+
+  document.getElementById("reader").style.display = "block";
+  document.getElementById("success-img").style.display = "none";
+  document.getElementById("clue-box").style.display = "none";
+
+  try {
+    const decodedText = await qrScanner.scanFile(file, true);
+    handleResult(decodedText);
+  } catch {
+    alert("No QR detected ❌");
+  }
+});
+
+// Disable browser back
+history.pushState(null, null, location.href);
+window.onpopstate = function () {
+  history.pushState(null, null, location.href);
+};
+</script>
+
+</body>
+</html>
